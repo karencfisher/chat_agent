@@ -1,8 +1,0 @@
-Human: hello
-
-AI: Hello! How can I assist you today?
-
-Human: goodbye
-
-ERROR Could not parse LLM output: Goodbye! If you have any more questions in the future, feel free to ask. Take care!
-
