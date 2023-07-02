@@ -1,0 +1,4 @@
+Human: hello
+
+ERROR variable chat_history should be a list of base messages, got 
+

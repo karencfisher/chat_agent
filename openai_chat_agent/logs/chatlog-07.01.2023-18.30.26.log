@@ -1,0 +1,16 @@
+Human: hello
+
+AI: Hello! How can I assist you today?
+
+Human: What can you tell me about LangChain?
+
+ERROR specified dataset is empty
+
+Human: that is interesting
+
+ERROR Could not parse LLM output: I'm glad you find it interesting! Is there something specific you would like to know more about or discuss further?
+
+Human: goodbye
+
+ERROR Could not parse LLM output: Goodbye! If you have any more questions in the future, feel free to ask. Have a great day!
+
