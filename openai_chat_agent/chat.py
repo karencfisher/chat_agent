@@ -4,15 +4,8 @@ import logging
 from datetime import datetime
 from dotenv import load_dotenv
 
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    AIMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
-
 from langchain.chat_models.openai import ChatOpenAI
-# from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationBufferMemory
 
 # vector store memory
 import faiss
@@ -53,23 +46,23 @@ class ChatAgent:
 
         # setup chat model and memory
         chat = ChatOpenAI(model='gpt-3.5-turbo', temperature=0, verbose=verbose)
-        # memory = ConversationBufferMemory(memory_key="chat_history", 
-        #                                   return_messages=True)
+        memory = ConversationBufferMemory(memory_key="chat_history", 
+                                          return_messages=True)
         
         # setup vector store
-        embeddings = OpenAIEmbeddings()
-        embedding_fn = embeddings.embed_query
-        embedding_size = 1536
-        index = faiss.IndexFlatL2(embedding_size)
+        # embeddings = OpenAIEmbeddings()
+        # embedding_fn = embeddings.embed_query
+        # embedding_size = 1536
+        # index = faiss.IndexFlatL2(embedding_size)
 
-        if  os.path.exists('conversation.db'):
-            vectorstore = FAISS.load_local('conversation.db', embeddings)
-        else:
-            vectorstore = FAISS(embedding_fn, index, InMemoryDocstore({}), {})
+        # if  os.path.exists('conversation.db'):
+        #     vectorstore = FAISS.load_local('conversation.db', embeddings)
+        # else:
+        #     vectorstore = FAISS(embedding_fn, index, InMemoryDocstore({}), {})
 
-        retriever = vectorstore.as_retriever(search_kwargs=dict(k=3))
-        memory = VectorStoreRetrieverMemory(retriever=retriever,
-                                            input_key="input")
+        # retriever = vectorstore.as_retriever(search_kwargs=dict(k=3))
+        # memory = VectorStoreRetrieverMemory(retriever=retriever,
+        #                                     input_key="input")
         
         # setup search tool and agent
         search=GoogleSearchAPIWrapper()
@@ -91,13 +84,8 @@ class ChatAgent:
         with open(profile_path, 'r') as FILE:
            sys_prompt = FILE.read()
 
-        system_message_prompt = SystemMessagePromptTemplate.from_template(sys_prompt)
-        human_template = "{input}"
-        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-
         prompt = self.conversation.agent.create_prompt(
-            system_message=system_message_prompt,
-            human_message=human_message_prompt,
+            system_message=sys_prompt,
             tools=tools
         )
         self.conversation.agent.llm_chain.prompt=prompt

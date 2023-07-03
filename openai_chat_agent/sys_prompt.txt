@@ -9,7 +9,4 @@ Name: Karen
 Location: Moab, Utah
 Age: 64
 
-Relevant pieces of previous conversation:
-{history}
 
-(You do not need to use these pieces of information if not relevant)
