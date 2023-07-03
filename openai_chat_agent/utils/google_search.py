@@ -7,6 +7,7 @@ import numpy as np
 import faiss
 from dotenv import load_dotenv
 from collections import defaultdict
+from fake_useragent import UserAgent
 
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -32,6 +33,8 @@ class GoogleSearch:
     def __get_pages(self, query):
         if self.verbose:
             print(f'Searching the web for {self.num_search} websites on \"{query}\"')
+
+        # call Google custom search engine to find websites
         url = 'https://www.googleapis.com/customsearch/v1'
         params = {"key": self.google_api_key,
                   "cx": self.google_cx,
@@ -50,14 +53,22 @@ class GoogleSearch:
         docs = []
         for index, item in enumerate(items):
             links.append({"title": item['title'], "link": item['link']})
-            header = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+
+            # spoof as a chrome browser and fetch website
+            ua = UserAgent
+            header = {'User-Agent': str(ua.chrome)}
             article_response = requests.get(item['link'], headers=header)
+
+            # scrape the text
             html_doc = article_response.text
             soup = BeautifulSoup(html_doc, 'html.parser')
             text = soup.get_text().strip()
             text = re.sub(r'\n+', '\n', text)
+
+            # split into documents for semantic search
             docs += self.text_splitter.create_documents([text], 
                                                         metadatas=[{"item": index}])
+            
             if self.verbose:
                 print(f'\r{len(docs)} documents', end='')
         if self.verbose:
@@ -93,10 +104,6 @@ class GoogleSearch:
     
     def __call__(self, query):
         items = self.__get_pages(query)
-        error = items[0].get('error_response')
-        if error is not None:
-            print(error)
-            return
         docs, links = self.__get_documents(items)
         selections = self.__get_selections(docs, query)
         summary, references = self.__get_summary(selections, links)
