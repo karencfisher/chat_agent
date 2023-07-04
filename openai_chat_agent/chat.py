@@ -4,29 +4,19 @@ import logging
 from datetime import datetime
 from dotenv import load_dotenv
 
-from langchain.chat_models.openai import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
-
-# vector store memory
-import faiss
-from langchain.memory import VectorStoreRetrieverMemory
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.docstore import InMemoryDocstore
-from langchain.vectorstores import FAISS
-
-# search tool/agent
-from langchain.utilities.google_search import GoogleSearchAPIWrapper
-from langchain.agents import (initialize_agent,
-                              Tool,
-                              AgentType)
-
 # speech recognition and synthesis
 try:
-    from openai_chat_agent.vosk_recognizer import SpeechRecognize
-    from openai_chat_agent.tts import Text2Speech
+    from openai_chat_agent.voice.vosk_recognizer import SpeechRecognize
+    from openai_chat_agent.voice.tts import Text2Speech
+    from openai_chat_agent.utils.context import Context
+    from openai_chat_agent.utils.google_search import GoogleSearch
+    from openai_chat_agent.utils.chat_openai import ChatOpenAI, parse
 except:
-    from vosk_recognizer import SpeechRecognize
-    from tts import Text2Speech
+    from voice.vosk_recognizer import SpeechRecognize
+    from voice.tts import Text2Speech
+    from utils.context import Context
+    from utils.google_search import GoogleSearch
+    from utils.chat_openai import ChatOpenAI, parse
 
 
 class ChatAgent:
@@ -44,65 +34,45 @@ class ChatAgent:
                             format='%(message)s')
         self.logger = logging.getLogger()
 
-        # setup chat model and memory
-        chat = ChatOpenAI(model='gpt-3.5-turbo', temperature=0, verbose=verbose)
-        memory = ConversationBufferMemory(memory_key="chat_history", 
-                                          return_messages=True)
-        
-        # setup vector store
-        # embeddings = OpenAIEmbeddings()
-        # embedding_fn = embeddings.embed_query
-        # embedding_size = 1536
-        # index = faiss.IndexFlatL2(embedding_size)
-
-        # if  os.path.exists('conversation.db'):
-        #     vectorstore = FAISS.load_local('conversation.db', embeddings)
-        # else:
-        #     vectorstore = FAISS(embedding_fn, index, InMemoryDocstore({}), {})
-
-        # retriever = vectorstore.as_retriever(search_kwargs=dict(k=3))
-        # memory = VectorStoreRetrieverMemory(retriever=retriever,
-        #                                     input_key="input")
-        
-        # setup search tool and agent
-        search=GoogleSearchAPIWrapper()
-        tools = [Tool(name='Search',
-                    func=search.run,
-                    description="Useful if you are asked about current events or current information on topics")
-            ]
-
-        self.conversation = initialize_agent(
-            tools=tools,
-            llm=chat, 
-            agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
-            memory=memory,
-            verbose=verbose
-        )
-
         # setup sys prompt
         profile_path = os.path.join('openai_chat_agent', 'sys_prompt.txt')
         with open(profile_path, 'r') as FILE:
            sys_prompt = FILE.read()
 
-        prompt = self.conversation.agent.create_prompt(
-            system_message=sys_prompt,
-            tools=tools
-        )
-        self.conversation.agent.llm_chain.prompt=prompt
-        if self.debug:
-            print(f'Prompt: {self.conversation.agent.llm_chain.prompt}')
+        # setup chat model and memory
+        self.chat = ChatOpenAI()
+        self.context = Context(sys_prompt)
+        
+        # setup search tool
+        self.search=GoogleSearch()
 
     def __call__(self, text):
         self.logger.info(f'Human: {text}\n')
-        try:
-            result = self.conversation.run(input=text)
-            self.logger.info(f'AI: {result}\n')
-            return None, result
-        except Exception as ERR:
-            self.logger.error(f'ERROR {ERR}\n')
-            if self.debug:
-                raise ERR
-            return ERR, None
+        done = False
+        while not done:
+            try:
+                result = self.chat(text)
+                action = result.get['action']
+                content = result.get['content']
+                
+                links = None
+                if action is None or action == 'final':
+                    done = True
+
+                else:
+                    tool = self.tools.get(action)
+                    if tool is None:
+                        pass
+                    else:
+                        results = tool['func'](content)
+                        text = results['text']
+                 
+
+            except Exception as ERR:
+                self.logger.error(f'ERROR {ERR}\n')
+                if self.debug:
+                    raise ERR
+                return ERR, None, None
         
     
 class Bot:

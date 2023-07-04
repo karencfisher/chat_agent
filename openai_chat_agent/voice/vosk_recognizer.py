@@ -10,7 +10,7 @@ import numpy as np
 
 class SpeechRecognize:
     def __init__(self):
-        path = os.path.join('openai_chat_agent', 'vosk_config.json')
+        path = os.path.join('openai_chat_agent', 'voice', 'vosk_config.json')
         with open(path, 'r') as FP:
             self.config = json.load(FP)
         vosk.SetLogLevel(-1)
