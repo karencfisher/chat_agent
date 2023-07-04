@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import json
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -10,13 +11,13 @@ try:
     from openai_chat_agent.voice.tts import Text2Speech
     from openai_chat_agent.utils.context import Context
     from openai_chat_agent.utils.google_search import GoogleSearch
-    from openai_chat_agent.utils.chat_openai import ChatOpenAI, parse
+    from openai_chat_agent.utils.chat_openai import ChatOpenAI
 except:
     from voice.vosk_recognizer import SpeechRecognize
     from voice.tts import Text2Speech
     from utils.context import Context
     from utils.google_search import GoogleSearch
-    from utils.chat_openai import ChatOpenAI, parse
+    from utils.chat_openai import ChatOpenAI
 
 
 class ChatAgent:
@@ -49,32 +50,29 @@ class ChatAgent:
     def __call__(self, text):
         self.logger.info(f'Human: {text}\n')
         done = False
-        while not done:
-            try:
-                result = self.chat(text)
-                action = result.get['action']
-                content = result.get['content']
-                
-                links = None
-                if action is None or action == 'final':
-                    done = True
-
-                else:
-                    tool = self.tools.get(action)
-                    if tool is None:
-                        pass
-                    else:
-                        results = tool['func'](content)
-                        text = results['text']
-                 
-
-            except Exception as ERR:
-                self.logger.error(f'ERROR {ERR}\n')
-                if self.debug:
-                    raise ERR
-                return ERR, None, None
         
-    
+        self.context.add(role='user', text=text)
+        prompt = self.context.get_prompt()
+        output = self.chat(prompt)
+        try:
+            result = json.loads(output)
+        except:
+            result = {'action': 'final', 'content': str(output)}
+
+        action = result.get('action')
+        content = result.get('content')
+        links = None
+
+        if action == 'final':
+            reply = content
+        if action == 'search':
+            self.logger.info(f'AI is Searching \"{content}\"\n')
+            reply, links = self.search(content)
+
+        self.logger.info(f'AI: {reply}\n')   
+        return reply, links
+        
+        
 class Bot:
     def __init__(self, voice=False, verbose=False):
         self.recog = SpeechRecognize()
@@ -86,16 +84,12 @@ class Bot:
         # start loop
         text = 'hello'
         while True:
-            err, result = self.chat_agent(text)
-
-            if err is None:
-                if self.voice:
-                    print('\rtalking...     ', end='')
-                    self.tts.speak(result)
-                else:
-                    print(f'AI: {result}\n')
+            result, _ = self.chat_agent(text)
+            if self.voice:
+                print('\rtalking...     ', end='')
+                self.tts.speak(result)
             else:
-                print(f'\rError: {err}')
+                print(f'\nAI: {result}\n')
 
             if text.lower() == 'goodbye':
                 break
