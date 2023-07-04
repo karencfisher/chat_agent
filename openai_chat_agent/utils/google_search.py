@@ -107,9 +107,5 @@ class GoogleSearch:
         docs, links = self.__get_documents(items)
         selections = self.__get_selections(docs, query)
         summary, references = self.__get_summary(selections, links)
-        output = f'I enquired:\n\"{query}\"\n\nI learned:\n{summary}\n\n'
-        output += 'My references:\n'
-        for reference in references:
-            output += f'{reference["title"]}: {reference["link"]}\n'
-        return output
+        return summary, references
     
