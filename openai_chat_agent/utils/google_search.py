@@ -17,10 +17,13 @@ import openai
 
 
 class GoogleSearch:
-    def __init__(self, num_search=10, k_best=5, verbose=False):
+    def __init__(self, num_search=10, k_best=5, l2_threshold=0.5, verbose=False):
         self.num_search = num_search
         self.k_best = k_best
+        self.l2_threshold = l2_threshold
         self.verbose = verbose
+        self.db = None
+        self.links = None
 
         load_dotenv()
         openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -49,10 +52,10 @@ class GoogleSearch:
     def __get_documents(self, items):
         if self.verbose:
             print('Fetching pages and breaking into chunks')
-        links = []
+        self.links = []
         docs = []
         for index, item in enumerate(items):
-            links.append({"title": item['title'], "link": item['link']})
+            self.links.append({"title": item['title'], "link": item['link']})
 
             # spoof as a chrome browser and fetch website
             ua = UserAgent
@@ -73,12 +76,15 @@ class GoogleSearch:
                 print(f'\r{len(docs)} documents', end='')
         if self.verbose:
             print('')
-        return docs, links
+        return docs
     
-    def __get_selections(self, docs, query):
+    def __store_documents(self, docs):
         # vectorize documents and select best k_best
         self.db = FAISS.from_documents(documents=docs, embedding=self.embeddings)
-        selections = self.db.similarity_search(query, k=self.k_best)
+
+    def __get_selections(self, query):
+        # vectorize documents and select best k_best
+        selections = self.db.similarity_search_with_score(query, k=self.k_best)
         if self.verbose:
             print(f'The relevant documents I found:')
             for selection in selections:
@@ -86,14 +92,15 @@ class GoogleSearch:
             print('')
         return selections
     
-    def __get_summary(self, selections, links):
+    def __get_summary(self, selections):
+        assert self.links is not None
         # get references used, in ranked order
         hash = defaultdict(int)
         for selection in selections:
-            hash[selection.metadata['item']] += 1
+            hash[selection[0].metadata['item']] += 1
         counts = [(k, v) for k, v in hash.items()]
         counts.sort(key=lambda x: x[1], reverse=True)
-        references = [links[i] for i, _ in counts]
+        references = [self.links[i] for i, _ in counts]
 
         # have LMM summarize extracted information
         prompt = f'Write a summary of the following information: {selections}'
@@ -103,9 +110,23 @@ class GoogleSearch:
         return summary.choices[0].message.content, references
     
     def __call__(self, query):
+        # if we have data, see if query is valid for it
+        if self.db is not None:
+            selections = self.__get_selections(query)
+            # if distance < threshold, we can use those results
+            if selections[0][1] < self.l2_threshold:
+                if self.verbose:
+                    print('Re-using previous search data')
+                return self.__get_summary(selections)
+            else:
+                if self.verbose:
+                    print('Previous data is not sufficient, so I have to search again.')
+                
+        # if not, we perform a new search
         items = self.__get_pages(query)
-        docs, links = self.__get_documents(items)
-        selections = self.__get_selections(docs, query)
-        summary, references = self.__get_summary(selections, links)
-        return summary, references
+        docs = self.__get_documents(items)
+        self.__store_documents(docs)
+        selections = self.__get_selections(query)
+        return self.__get_summary(selections)
+
     

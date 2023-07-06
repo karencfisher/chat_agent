@@ -24,6 +24,7 @@ class ChatAgent:
     debug = True
 
     def __init__(self, verbose=False):
+        self.verbose = verbose
         load_dotenv()
 
         # setup logging
@@ -45,29 +46,34 @@ class ChatAgent:
         self.context = Context(sys_prompt)
         
         # setup search tool
-        self.search=GoogleSearch()
+        self.search=GoogleSearch(verbose=verbose)
 
     def __call__(self, text):
         self.logger.info(f'Human: {text}\n')
         done = False
         
-        self.context.add(role='user', text=text)
-        prompt = self.context.get_prompt()
-        output = self.chat(prompt)
-        try:
-            result = json.loads(output)
-        except:
-            result = {'action': 'final', 'content': str(output)}
+        while not done:
+            self.context.add(role='user', text=text)
+            prompt = self.context.get_prompt()
+            output = self.chat(prompt)
+            try:
+                result = json.loads(output)
+            except:
+                result = {'action': 'final', 'content': str(output)}
 
-        action = result.get('action')
-        content = result.get('content')
-        links = None
+            if self.verbose:
+                print(result)
+            action = result.get('action')
+            content = result.get('content')
+            links = None
 
-        if action == 'final':
-            reply = content
-        if action == 'search':
-            self.logger.info(f'AI is Searching \"{content}\"\n')
-            reply, links = self.search(content)
+            if action == 'final':
+                reply = content
+                done = True
+            elif action == 'search':
+                self.logger.info(f'AI is Searching \"{content}\"\n')
+                summary, links = self.search(content)
+                text = f'Searh results:\n{summary}\n\nAnswer below query from this information only.\n\n{text}'
 
         self.logger.info(f'AI: {reply}\n')   
         return reply, links
