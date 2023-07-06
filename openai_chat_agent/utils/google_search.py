@@ -23,7 +23,6 @@ class GoogleSearch:
         self.l2_threshold = l2_threshold
         self.verbose = verbose
         self.db = None
-        self.links = None
 
         load_dotenv()
         openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -52,11 +51,8 @@ class GoogleSearch:
     def __get_documents(self, items):
         if self.verbose:
             print('Fetching pages and breaking into chunks')
-        self.links = []
         docs = []
-        for index, item in enumerate(items):
-            self.links.append({"title": item['title'], "link": item['link']})
-
+        for item in items:
             # spoof as a chrome browser and fetch website
             ua = UserAgent
             header = {'User-Agent': str(ua.chrome)}
@@ -70,7 +66,7 @@ class GoogleSearch:
 
             # split into documents for semantic search
             docs += self.text_splitter.create_documents([text], 
-                                                        metadatas=[{"item": index}])
+                        metadatas=[{'reference': (item['title'], item['link'])}])
             
             if self.verbose:
                 print(f'\r{len(docs)} documents', end='')
@@ -93,14 +89,13 @@ class GoogleSearch:
         return selections
     
     def __get_summary(self, selections):
-        assert self.links is not None
         # get references used, in ranked order
         hash = defaultdict(int)
         for selection in selections:
-            hash[selection[0].metadata['item']] += 1
+            hash[selection[0].metadata['reference']] += 1
         counts = [(k, v) for k, v in hash.items()]
         counts.sort(key=lambda x: x[1], reverse=True)
-        references = [self.links[i] for i, _ in counts]
+        references = [link for link, _ in counts]
 
         # have LMM summarize extracted information
         prompt = f'Write a summary of the following information: {selections}'
