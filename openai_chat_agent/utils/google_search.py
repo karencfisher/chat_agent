@@ -76,7 +76,11 @@ class GoogleSearch:
     
     def __store_documents(self, docs):
         # vectorize documents and select best k_best
-        self.db = FAISS.from_documents(documents=docs, embedding=self.embeddings)
+        if self.db is None:
+            self.db = FAISS.from_documents(documents=docs, embedding=self.embeddings)
+        else:
+            temp_db = FAISS.from_documents(documents=docs, embedding=self.embeddings)
+            self.db.merge_from(temp_db)
 
     def __get_selections(self, query):
         # vectorize documents and select best k_best
