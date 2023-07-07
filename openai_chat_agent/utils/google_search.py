@@ -4,7 +4,10 @@ from bs4 import BeautifulSoup
 import re
 import os
 import numpy as np
+import asyncio
 import faiss
+import openai
+
 from dotenv import load_dotenv
 from collections import defaultdict
 from fake_useragent import UserAgent
@@ -13,7 +16,10 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
 
-import openai
+try:
+    from openai_chat_agent.utils.async_web_scraper import AsyncWebScraper
+except:
+    from utils.async_web_scraper import AsyncWebScraper
 
 
 class GoogleSearch:
@@ -48,30 +54,41 @@ class GoogleSearch:
             return [{"error_response": response.status_code}]
         return response.json()['items']
     
-    def __get_documents(self, items):
+    async def __get_documents_async(self, items):
         if self.verbose:
             print('Fetching pages and breaking into chunks')
-        docs = []
-        for item in items:
-            # spoof as a chrome browser and fetch website
-            ua = UserAgent
-            header = {'User-Agent': str(ua.chrome)}
-            article_response = requests.get(item['link'], headers=header)
 
-            # scrape the text
-            soup = BeautifulSoup(article_response.text, 'html.parser')
-            text = soup.get_text().strip()
-            text = re.sub(r'\n+', '\n', text)
+        scraper = AsyncWebScraper(self.text_splitter)
+        docs = await scraper.get_documents(items)
 
-            # split into documents for semantic search
-            docs += self.text_splitter.create_documents([text], 
-                        metadatas=[{'reference': (item['title'], item['link'])}])
-            
-            if self.verbose:
-                print(f'\r{len(docs)} documents', end='')
         if self.verbose:
             print('')
         return docs
+    
+    def __get_documents(self, items):
+        # if self.verbose:
+        #     print('Fetching pages and breaking into chunks')
+        # docs = []
+        # for item in items:
+        #     # spoof as a chrome browser and fetch website
+        #     ua = UserAgent
+        #     header = {'User-Agent': str(ua.chrome)}
+        #     article_response = requests.get(item['link'], headers=header)
+
+        #     # scrape the text
+        #     soup = BeautifulSoup(article_response.text, 'html.parser')
+        #     text = soup.get_text().strip()
+        #     text = re.sub(r'\n+', '\n', text)
+
+        #     # split into documents for semantic search
+        #     docs += self.text_splitter.create_documents([text], 
+        #                 metadatas=[{'reference': (item['title'], item['link'])}])
+            
+        #     if self.verbose:
+        #         print(f'\r{len(docs)} documents', end='')
+
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.__get_documents_async(items))
     
     def __store_documents(self, docs):
         # vectorize documents and select best k_best

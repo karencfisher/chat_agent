@@ -36,10 +36,15 @@ class ChatAgent:
                             format='%(message)s')
         self.logger = logging.getLogger()
 
-        # fetch profilr
+        # fetch profile
         profile_path = os.path.join('openai_chat_agent', 'user_profile.txt')
         with open(profile_path, 'r') as FILE:
            user_profile = FILE.read()
+
+        # And template for search result prompts
+        template_path = os.path.join('openai_chat_agent', 'result_prompt.txt')
+        with open(template_path, 'r') as FILE:
+            self.result_template = FILE.read()
 
         # setup sys prompt
         prompt_path = os.path.join('openai_chat_agent', 'sys_prompt.txt')
@@ -78,7 +83,9 @@ class ChatAgent:
             elif action == 'search':
                 self.logger.info(f'AI is Searching \"{content}\"\n')
                 summary, links = self.search(content)
-                text = f'Searh results:\n{summary}\n\nAnswer below query from this information only.\n\n{text}'
+                text = self.result_template.replace('```summary```', summary)
+                text = text.replace('```query```', text)
+                self.context.add(role='assistant', text=str(result))
 
         self.context.add(role='assistant', text=reply)
         self.logger.info(f'AI: {reply}\n')   

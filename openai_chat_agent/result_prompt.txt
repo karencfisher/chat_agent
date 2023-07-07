@@ -1,0 +1,10 @@
+Searh results:
+
+```summary```
+
+Use this summary for to answer the query below, without any additional use of the
+search tool. 
+
+```query```
+
+Be as detailed as you can from the information you now have.
