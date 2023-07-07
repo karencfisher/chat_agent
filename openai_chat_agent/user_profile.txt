@@ -1,0 +1,5 @@
+User profile:
+Name: Karen
+Age: 64
+Occupation: AI developer
+Location: Moab, Utah

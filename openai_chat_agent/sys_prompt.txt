@@ -30,9 +30,4 @@ Assistant: {"action": "final", "content": "Hello, how can I asist you today?"}
 You are also provided with a user profile, to personalize your responses and have
 other pertinent information. Remember the information and use it as appropriate
 
-User profile:
-Name: Karen
-Age: 64
-Occupation: AI developer
-Location: Moab, Utah
-
+```user_profile```

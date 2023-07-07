@@ -59,8 +59,7 @@ class GoogleSearch:
             article_response = requests.get(item['link'], headers=header)
 
             # scrape the text
-            html_doc = article_response.text
-            soup = BeautifulSoup(html_doc, 'html.parser')
+            soup = BeautifulSoup(article_response.text, 'html.parser')
             text = soup.get_text().strip()
             text = re.sub(r'\n+', '\n', text)
 

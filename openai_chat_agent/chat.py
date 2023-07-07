@@ -36,10 +36,16 @@ class ChatAgent:
                             format='%(message)s')
         self.logger = logging.getLogger()
 
-        # setup sys prompt
-        profile_path = os.path.join('openai_chat_agent', 'sys_prompt.txt')
+        # fetch profilr
+        profile_path = os.path.join('openai_chat_agent', 'user_profile.txt')
         with open(profile_path, 'r') as FILE:
+           user_profile = FILE.read()
+
+        # setup sys prompt
+        prompt_path = os.path.join('openai_chat_agent', 'sys_prompt.txt')
+        with open(prompt_path, 'r') as FILE:
            sys_prompt = FILE.read()
+        sys_prompt.replace('``user_profile```', user_profile)
 
         # setup chat model and memory
         self.chat = ChatOpenAI()
