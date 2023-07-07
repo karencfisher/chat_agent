@@ -101,7 +101,7 @@ class GoogleSearch:
         references = [link for link, _ in counts]
 
         # have LMM summarize extracted information
-        prompt = f'Write a summary of the following information: {selections}'
+        prompt = f'Write a detailed summary of the following information: {selections}'
         summary = openai.ChatCompletion.create(model='gpt-3.5-turbo',
                                     messages=[{'role': 'user', 'content': prompt}],
                                     temperature=0)

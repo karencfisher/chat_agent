@@ -45,7 +45,7 @@ class ChatAgent:
         prompt_path = os.path.join('openai_chat_agent', 'sys_prompt.txt')
         with open(prompt_path, 'r') as FILE:
            sys_prompt = FILE.read()
-        sys_prompt.replace('``user_profile```', user_profile)
+        sys_prompt = sys_prompt.replace('``user_profile```', user_profile)
 
         # setup chat model and memory
         self.chat = ChatOpenAI()
@@ -57,7 +57,6 @@ class ChatAgent:
     def __call__(self, text):
         self.logger.info(f'Human: {text}\n')
         done = False
-        
         while not done:
             self.context.add(role='user', text=text)
             prompt = self.context.get_prompt()
@@ -81,6 +80,7 @@ class ChatAgent:
                 summary, links = self.search(content)
                 text = f'Searh results:\n{summary}\n\nAnswer below query from this information only.\n\n{text}'
 
+        self.context.add(role='assistant', text=reply)
         self.logger.info(f'AI: {reply}\n')   
         return reply, links
         
