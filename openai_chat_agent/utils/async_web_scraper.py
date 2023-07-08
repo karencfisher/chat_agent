@@ -1,4 +1,4 @@
-# Thank you to ChatGPT
+# Thank you to ChatGPT for its assistance!
 import asyncio
 import aiohttp
 import logging

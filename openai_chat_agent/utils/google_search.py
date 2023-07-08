@@ -5,6 +5,7 @@ import numpy as np
 import asyncio
 import openai
 import time
+import logging
 
 from dotenv import load_dotenv
 from collections import defaultdict
@@ -21,7 +22,7 @@ except:
 
 
 class GoogleSearch:
-    def __init__(self, num_search=10, k_best=5, l2_threshold=0.5, verbose=False):
+    def __init__(self, num_search=10, k_best=5, l2_threshold=0.4, verbose=False):
         self.num_search = num_search
         self.k_best = k_best
         self.l2_threshold = l2_threshold
@@ -35,6 +36,7 @@ class GoogleSearch:
 
         self.embeddings = OpenAIEmbeddings()
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
+        self.logger = logging.getLogger('chat_log')
 
     def __get_pages(self, query):
         if self.verbose:
@@ -82,6 +84,7 @@ class GoogleSearch:
             print('Semantic search on vector DB')
         # vectorize documents and select best k_best
         selections = self.db.similarity_search_with_score(query, k=self.k_best)
+        self.logger.info(f'Relevant documents: {selections}')
         if self.verbose:
             print(f'The relevant documents I found:')
             for selection in selections:
@@ -116,11 +119,13 @@ class GoogleSearch:
                 selections = self.__get_selections(query)
             # if distance < threshold, we can use those results
             if selections[0][1] < self.l2_threshold:
+                self.logger.info('Found relevant documents in cache.')
                 if self.verbose:
                     print('Re-using previous search data')
                     return self.__timeit(self.__get_summary, (selections,))
                 return self.__get_summary(selections)
             else:
+                self.logger.info('No relevant documents in cache, searching for more.')
                 if self.verbose:
                     print('Previous data is not sufficient, so I have to search again.')
                 
