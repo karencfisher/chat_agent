@@ -33,8 +33,11 @@ class ChatAgent:
         logpath = os.path.join('openai_chat_agent', 'logs', logfile)
         logging.basicConfig(handlers=[logging.FileHandler(logpath, 'w', 'utf-8')], 
                             level=logging.INFO, 
-                            format='%(message)s')
-        self.logger = logging.getLogger()
+                            format='%(asctime)s %(message)s')
+        self.logger = logging.getLogger('chat_log')
+
+        # setup chat logging (transcript)
+        self.chat_logger = ChatLogging()
 
         # fetch profile
         profile_path = os.path.join('openai_chat_agent', 'user_profile.txt')
@@ -60,7 +63,8 @@ class ChatAgent:
         self.search=GoogleSearch(verbose=verbose)
 
     def __call__(self, text):
-        self.logger.info(f'Human: {text}\n')
+        self.logger.info(f'User\'s message: {text}')
+        self.chat_logger.log_message(f'Human: {text}')
         done = False
         while not done:
             self.context.add(role='user', text=text)
@@ -70,28 +74,42 @@ class ChatAgent:
                 result = json.loads(output)
             except:
                 result = {'action': 'final', 'content': str(output)}
+            self.logger.info(str(result))
 
             if self.verbose:
                 print(result)
             action = result.get('action')
             content = result.get('content')
+            try:
+                content_json = json.loads(content)
+                content = content_json['content']
+            except:
+                pass
             links = None
 
             if action == 'final':
                 reply = content
                 done = True
             elif action == 'search':
-                self.logger.info(f'AI is Searching \"{content}\"\n')
                 summary, links = self.search(content)
                 text = self.result_template.replace('```summary```', summary)
                 text = text.replace('```query```', text)
-                self.context.add(role='assistant', text=str(result))
-
-        self.context.add(role='assistant', text=reply)
-        self.logger.info(f'AI: {reply}\n')   
+                self.context.add(role='assistant', text=str(result)) 
+        self.chat_logger.log_message(f'AI: {reply}') 
         return reply, links
         
-        
+
+class ChatLogging:
+    def __init__(self):
+        now = datetime.now()
+        chat_file = f'chat-{now.strftime("%m.%d.%Y-%H.%M.%S")}.log'
+        self.chat_path = os.path.join('openai_chat_agent', 'chats', chat_file)
+
+    def log_message(self, message):
+        with open(self.chat_path, 'a') as FILE:
+            FILE.write(f'{message}\n\n')        
+
+
 class Bot:
     def __init__(self, voice=False, verbose=False):
         self.recog = SpeechRecognize()

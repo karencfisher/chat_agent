@@ -1,9 +1,8 @@
 import requests
-import json
 from bs4 import BeautifulSoup
-import re
 import os
 import numpy as np
+import asyncio
 import openai
 import time
 
@@ -14,6 +13,11 @@ from fake_useragent import UserAgent
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
+
+try:
+    from openai_chat_agent.utils.async_web_scraper import AsyncWebScraper
+except:
+    from utils.async_web_scraper import AsyncWebScraper
 
 
 class GoogleSearch:
@@ -48,30 +52,20 @@ class GoogleSearch:
             return [{"error_response": response.status_code}]
         return response.json()['items']
     
-    def __get_documents(self, items):
+    async def __get_documents_async(self, items):
         if self.verbose:
             print('Fetching pages and breaking into chunks')
-        docs = []
-        for item in items:
-            # spoof as a chrome browser and fetch website
-            ua = UserAgent
-            header = {'User-Agent': str(ua.chrome)}
-            article_response = requests.get(item['link'], headers=header)
 
-            # scrape the text
-            soup = BeautifulSoup(article_response.text, 'html.parser')
-            text = soup.get_text().strip()
-            text = re.sub(r'\n+', '\n', text)
+        scraper = AsyncWebScraper(self.text_splitter)
+        docs = await scraper.get_documents(items)
 
-            # split into documents for semantic search
-            docs += self.text_splitter.create_documents([text], 
-                        metadatas=[{'reference': (item['title'], item['link'])}])
-            if self.verbose:
-                print(f'\r{len(docs)} documents', end='')
-            
         if self.verbose:
             print('')
-        return docs 
+        return docs
+    
+    def __get_documents(self, items):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.__get_documents_async(items))
     
     def __store_documents(self, docs):
         # vectorize documents and select best k_best
@@ -132,11 +126,17 @@ class GoogleSearch:
                 
         # if not, we perform a new search
         if self.verbose:
+            overall_start = time.time()
+
             items = self.__timeit(self.__get_pages, (query,))      
             docs = self.__timeit(self.__get_documents, (items,))
             self.__timeit(self.__store_documents, (docs,))
             selections = self.__timeit(self.__get_selections, (query,))
-            return self.__timeit(self.__get_summary, (selections,))
+            output = self.__timeit(self.__get_summary, (selections,))
+            
+            overall_elapsed = time.time() - overall_start
+            print(f'Total elapsed time = {overall_elapsed: .3f}')
+            return output
         else:
             items = self.__get_pages(query)       
             docs = self.__get_documents(items)
@@ -148,7 +148,7 @@ class GoogleSearch:
         start = time.time()
         output = func(*args)
         elapsed = time.time() - start
-        print(f'time for this step = {elapsed: .3f} seconds')
+        print(f'elapsed time current step = {elapsed: .3f}')
         return output
 
     
