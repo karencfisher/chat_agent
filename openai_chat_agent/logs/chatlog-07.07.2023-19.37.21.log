@@ -1,0 +1,16 @@
+Human: hello
+
+AI: Hello, Karen! How can I assist you today?
+
+Human: How can I learn more about prompt engineering?
+
+AI is Searching "how to learn more about prompt engineering"
+
+AI: {"action": "final", "content": "You have several resources to learn more about prompt engineering, Karen. For starters, there's a free course available that provides a comprehensive overview of prompt engineering, including the roles and responsibilities of a professional prompt engineer. This course is designed to give you hands-on experience and give you an edge in the job market. 
+
+By the end of the course, you should understand the fundamentals of prompt engineering and the role of prompt engineers in generative models. The course offers a variety of resources for further learning. These include articles, blogs, practical examples, and tasks related to prompt engineering. You can
+
+Human: goodbye
+
+AI: Goodbye, Karen! Don't hesitate to reach out if you have more questions in the future. Have a great day!
+
