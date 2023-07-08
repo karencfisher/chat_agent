@@ -1,6 +1,7 @@
 import os
 import openai
 import json
+import logging
 from dotenv import load_dotenv
 
 
@@ -13,7 +14,11 @@ class ChatOpenAI:
         with open(config_path, 'r') as FILE:
             self.config = json.load(FILE)
 
+        self.logger = logging.getLogger('chat_log')
+        self.logger.info(f'Using configuration {self.config}')
+
     def __call__(self, prompt):
+        self.logger.info(f'Prompt: {prompt}')
         result = openai.ChatCompletion.create(
             model=self.config['model'],
             messages = prompt,

@@ -126,11 +126,17 @@ class GoogleSearch:
                 
         # if not, we perform a new search
         if self.verbose:
+            overall_start = time.time()
+
             items = self.__timeit(self.__get_pages, (query,))      
             docs = self.__timeit(self.__get_documents, (items,))
             self.__timeit(self.__store_documents, (docs,))
             selections = self.__timeit(self.__get_selections, (query,))
-            return self.__timeit(self.__get_summary, (selections,))
+            output = self.__timeit(self.__get_summary, (selections,))
+            
+            overall_elapsed = time.time() - overall_start
+            print(f'Total elapsed time = {overall_elapsed: .3f}')
+            return output
         else:
             items = self.__get_pages(query)       
             docs = self.__get_documents(items)
@@ -142,7 +148,7 @@ class GoogleSearch:
         start = time.time()
         output = func(*args)
         elapsed = time.time() - start
-        print(f'elapsed time = {elapsed: .3f}')
+        print(f'elapsed time current step = {elapsed: .3f}')
         return output
 
     
