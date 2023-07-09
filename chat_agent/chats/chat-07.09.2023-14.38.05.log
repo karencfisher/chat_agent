@@ -1,0 +1,20 @@
+Human: hello
+
+AI: Hello Karen, how can I assist you today?
+
+Human: what is a forecast here today
+
+AI: {"action": "final", "content": "The weather forecast for Moab, Utah today suggests it will be a sunny day with a high temperature of about 101°F. Throughout the day, you can expect the temperature to vary, with an anticipated 84°F in the morning, reaching up to 101°F in the afternoon, and cooling down to 86°F in the evening. The overnight temperature will be around 76°F with a minimal chance of rain at 3%. The wind is expected to come from the southwest at 11 mph. Today's sunrise was at 6:02 am and sunset will be at 
+
+Human: huh
+
+AI: I'm sorry if my previous explanation was confusing. To simplify, the weather in Moab, Utah today is expected to be sunny with a high of 101°F and a low of 71°F. The chance of rain is pretty low, at only 3%. I hope that helps, Karen!
+
+Human: thank you
+
+AI: You're welcome, Karen! If you have any other questions, feel free to ask.
+
+Human: goodbye
+
+AI: Goodbye, Karen! Have a great day!
+

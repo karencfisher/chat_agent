@@ -1,0 +1,2 @@
+2023-07-09 13:16:11,788 Using configuration {'provider': 'dummy', 'model': 'gpt-4', 'temperature': 0.7, 'top_p': 1, 'n': 1, 'presence_penalty': 0, 'frequency_penalty': 0, 'max_context': 4096, 'max_tokens': 128}
+2023-07-09 13:16:12,217 User's message: hello

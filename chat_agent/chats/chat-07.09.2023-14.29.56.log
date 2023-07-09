@@ -1,0 +1,12 @@
+Human: hello
+
+AI: Hello Karen, how can I assist you today?
+
+Human: also forecast here for today
+
+AI: {'action': 'final', 'content': 'The weather today in Moab, Utah, is forecasted to be mostly sunny with temperatures ranging from 101°F to 62°F according to Time and Date. Similar information is provided by The Weather Channel, with a slight variation in the minimum temperature, indicating it could go down to 71°F. Conditions like wind speed, direction, humidity, and UV index are also available but specific values are not mentioned in the summaries. Please remember to stay hydrated and protect yourself from sun exposure, as it seems to be quite a hot day.'}
+
+Human: goodbye
+
+AI: {'action': 'final', 'content': 'Goodbye Karen, have a great day!'}
+
