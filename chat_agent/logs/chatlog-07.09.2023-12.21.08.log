@@ -1,2 +1,0 @@
-2023-07-09 12:21:09,915 Using configuration {'provider': 'gpt4all', 'model': 'ggml-gpt4all-j-v1.3-groovy', 'max_tokens': 80, 'max_context': 801}
-2023-07-09 12:21:10,351 User's message: hello

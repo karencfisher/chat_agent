@@ -1,3 +1,0 @@
-2023-07-09 13:43:27,397 Using configuration {'provider': 'dummy', 'model': 'gpt-4', 'temperature': 0.7, 'top_p': 1, 'n': 1, 'presence_penalty': 0, 'frequency_penalty': 0, 'max_context': 4096, 'max_tokens': 128}
-2023-07-09 13:43:27,825 User's message: hello
-2023-07-09 13:43:45,994 {'action': 'final', 'content': "{'action': 'final', 'content': 'this is just a test'}"}
