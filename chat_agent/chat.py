@@ -92,6 +92,8 @@ class ChatAgent:
                 print(result)
             action = result.get('action')
             content = result.get('content')
+            if '\'action\'' in content or '\"action\"' in content:
+                content = content.split(':')[-1]
             links = None
 
             if action == 'final':
