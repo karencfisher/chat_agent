@@ -7,16 +7,15 @@ from dotenv import load_dotenv
 
 # speech recognition and synthesis
 try:
-    from chat_agent.utils.context import Context
-    from chat_agent.utils.google_search import GoogleSearch
-    from chat_agent.utils.chat_openai import ChatOpenAI
-    from chat_agent.utils.chat_palm import ChatPalm
+    from chat_agent.memory.context import Context
+    from chat_agent.tools.google_search import GoogleSearch
+    from chat_agent.LLMs.chat_openai import ChatOpenAI
+    from chat_agent.LLMs.chat_palm import ChatPalm
 except:
-    from utils.context import Context
-    from utils.google_search import GoogleSearch
-    from utils.chat_openai import ChatOpenAI
-    from utils.chat_palm import ChatPalm
-    from utils.chat_dummy import ChatDummy
+    from memory.context import Context
+    from tools.google_search import GoogleSearch
+    from LLMs.chat_openai import ChatOpenAI
+    from LLMs.chat_palm import ChatPalm
 
 
 class ChatAgent:
@@ -66,7 +65,7 @@ class ChatAgent:
         elif config['provider'] == 'gpt4all':
             self.chat = ChatGPT4ALL(config)
         else:
-            self.chat = ChatDummy(config)
+            raise ValueError('Unknown provider')
 
         # context buffer
         self.context = Context(sys_prompt)
@@ -138,9 +137,9 @@ class Bot:
         else:
             # vosk and gpt4all don't play in the same sandbox :(
             try:
-                from chat_agent.utils.chat_gpt4all import ChatGPT4ALL
+                from chat_agent.LLMs.chat_gpt4all import ChatGPT4ALL
             except:
-                from utils.chat_gpt4all import ChatGPT4ALL
+                from LLMs.chat_gpt4all import ChatGPT4ALL
 
         self.voice = voice
         self.chat_agent = ChatAgent(verbose=verbose)

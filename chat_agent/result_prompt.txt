@@ -2,7 +2,7 @@ Searh results:
 
 ```summary```
 
-Use this summary for to answer the query below, without any additional use of the
+Use this summary to answer the query below, without any additional use of the
 search tool. 
 
 ```query```

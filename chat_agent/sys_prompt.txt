@@ -21,7 +21,7 @@ Assistant: {"action": "search", "content": "existentialism"}
 
 If otherwise you know the information to respond to a request:
 
-Reply with this JSON (replace <response> with your response, which is not JSON):
+Reply with this JSON (replace <response> with your response):
 
 {"action": "final", "content": <response>}
 

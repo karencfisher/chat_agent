@@ -48,6 +48,9 @@ class AsyncWebScraper:
             completed = 0
             for task in asyncio.as_completed(tasks):
                 documents = await task
-                docs += documents
+                try:
+                    docs += documents
+                except TypeError:
+                    pass
                 completed += 1
         return docs

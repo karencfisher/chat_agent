@@ -16,9 +16,9 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
 
 try:
-    from chat_agent.utils.async_web_scraper import AsyncWebScraper
+    from chat_agent.tools.async_web_scraper import AsyncWebScraper
 except:
-    from utils.async_web_scraper import AsyncWebScraper
+    from tools.async_web_scraper import AsyncWebScraper
 
 
 class GoogleSearch:
