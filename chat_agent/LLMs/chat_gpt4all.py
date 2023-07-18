@@ -4,7 +4,7 @@ import logging
 from dotenv import load_dotenv
 
 
-class ChatGPT4ALL:
+class ChatModel:
     def __init__(self, config):
         self.config = config
 

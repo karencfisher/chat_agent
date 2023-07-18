@@ -1,4 +1,0 @@
-{"provider": "gpt4all",
- "model": "ggml-gpt4all-j-v1.3-groovy",
- "max_tokens": 80,
- "max_context": 801}
