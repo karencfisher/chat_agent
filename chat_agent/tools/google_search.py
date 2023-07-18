@@ -68,7 +68,9 @@ class Tool(BaseTool):
         return docs
     
     def __get_documents(self, items):
-        loop = asyncio.get_event_loop()
+        # loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         return loop.run_until_complete(self.__get_documents_async(items))
     
     def __store_documents(self, docs):

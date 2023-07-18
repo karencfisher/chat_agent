@@ -7,13 +7,13 @@ Answer any question as best as you can using the following tools:
 If you already have the final answer to a question, or general conversation, respond with this
 format:
 
-Thought: I now know the answer (if I've learned something, rather than general conversation)
-Observation: what I found out (if I've learned something, rather than general conversation)
+Thought: say "I now know the answer" (only if you've learned something, rather than general conversation)
+Observation: share what what you found out (if you've learned something, rather than general conversation)
 Final Answer: your final answer or general response
 
 If you need to search or perform other steps to answer a question or respond to a user prompt:
 
-Thought: comment on what you want to do next 
+Thought: comment on what you want to do next (include telling user this may take a moment)
 Action: the action to take, exactly one element of [{tool_names}]
 Action Input: the input to the action
 

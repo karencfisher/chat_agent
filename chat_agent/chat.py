@@ -5,6 +5,8 @@ import json
 import re
 import importlib
 import datetime
+from threading import Thread
+from queue import Queue
 from dotenv import load_dotenv
 
 # speech recognition and synthesis
@@ -74,7 +76,7 @@ class ChatAgent:
                                num_response_tokens=config['max_tokens'],
                                max_context_tokens=config['max_context'])
 
-    def __call__(self, text):
+    def __call__(self, text, message_queue):
         self.logger.info(f'User\'s message: {text}')
         self.chat_logger.log_message(f'Human: {text}')
         done = False
@@ -87,7 +89,11 @@ class ChatAgent:
                 print(output)
             self.context.add(role='assistant', text=output)
 
-            tool, tool_input = self.__parse(output)
+            tool, tool_input, thought = self.__parse(output)
+            if thought is not None:
+                self.chat_logger.log_message(f'AI: {thought}')
+                message_queue.put((False, thought, None))
+
             if tool == 'Final Answer':
                 done = True
                 metadata = None
@@ -104,12 +110,23 @@ class ChatAgent:
 
             text = f'{text}\n\nObservation: {result}'
                         
-        self.chat_logger.log_message(f'AI: {tool_input}') 
-        return tool_input, metadata
+        self.chat_logger.log_message(f'AI: {tool_input}')
+        message_queue.put((True, tool_input, metadata))
     
     def __parse(self, generated: str):
+        # check for thoughts to record
+        regex = r"Thought: [\[]?(.*?)[\]]?[\n]"
+        match = re.search(regex, generated, re.DOTALL)
+        if match:
+            thought_output = match.group(1).strip()
+        else:
+            thought_output = None
+
+        # is final answer?
         if 'Final Answer:' in generated:
-            return "Final Answer", generated.split('Final Answer:')[-1].strip()
+            return "Final Answer", generated.split('Final Answer:')[-1].strip(), thought_output
+
+        # find action
         regex = r"Action: [\[]?(.*?)[\]]?[\n]*Action Input:[\s]*(.*)"
         match = re.search(regex, generated, re.DOTALL)
         if not match:
@@ -118,7 +135,8 @@ class ChatAgent:
         else:
             tool = match.group(1).strip()
             tool_input = match.group(2)
-        return tool, tool_input.strip(" ").strip('"')
+
+        return tool, tool_input.strip(" ").strip('"'), thought_output
         
 
 class ChatLogging:
@@ -151,16 +169,25 @@ class Bot:
         self.voice = voice
         self.chat_agent = ChatAgent(verbose=verbose)
 
+        self.message_queue = Queue()
+
     def loop(self):
         # start loop
         text = 'hello'
         while True:
-            result, _ = self.chat_agent(text)
-            if self.voice:
-                print('\rtalking...     ', end='')
-                self.tts.speak(result)
-            else:
-                print(f'\nAI: {result}\n')
+            message_thread = Thread(target=self.chat_agent, 
+                                    args=(text, self.message_queue))
+            message_thread.start()
+            done = False
+            while not done:
+                message = self.message_queue.get()
+                if self.voice:
+                    print('\rtalking...     ', end='')
+                    self.tts.speak(message[1])
+                else:
+                    print(f'AI: {message[1]}\n')
+                done = message[0]
+            message_thread.join()
 
             if text.lower() == 'goodbye':
                 break
