@@ -110,6 +110,8 @@ class Tool(BaseTool):
         summary = openai.ChatCompletion.create(model='gpt-3.5-turbo',
                                     messages=[{'role': 'user', 'content': prompt}],
                                     temperature=0)
+        if self.verbose:
+            print(f'Summary: {summary.choices[0].message.content}\nReferences: {references}')
         return summary.choices[0].message.content, references
     
     def __call__(self, query):

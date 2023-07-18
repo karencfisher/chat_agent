@@ -85,6 +85,7 @@ class ChatAgent:
             self.logger.info(f'AI: {output}')
             if self.verbose:
                 print(output)
+            self.context.add(role='assistant', text=output)
 
             tool, tool_input = self.__parse(output)
             if tool == 'Final Answer':
@@ -94,14 +95,14 @@ class ChatAgent:
             if tool not in list(self.tools.keys()):
                 raise KeyError('Invalid tool name')
             
-            result, metadata = self.tools['tool'](tool_input)
+            result, metadata = self.tools[tool](tool_input)
             if metadata is not None:
                 try:
                     self.tools['tool'].post_process(metadata)
                 except:
                     pass
 
-            text = f'Observation: {result}\n' + text
+            text = f'{text}\n\nObservation: {result}'
                         
         self.chat_logger.log_message(f'AI: {tool_input}') 
         return tool_input, metadata
