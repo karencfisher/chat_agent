@@ -4,7 +4,7 @@ import logging
 from dotenv import load_dotenv
 
 
-class ChatPalm:
+class ChatModel:
     def __init__(self, config):
         load_dotenv()
         palm_api_key = os.getenv('PALM_API_KEY')

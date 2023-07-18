@@ -17,16 +17,19 @@ from langchain.vectorstores import FAISS
 
 try:
     from chat_agent.tools.async_web_scraper import AsyncWebScraper
+    from chat_agent.tools.base_tool import BaseTool
 except:
     from tools.async_web_scraper import AsyncWebScraper
+    from tools.base_tool import BaseTool
 
 
-class GoogleSearch:
-    def __init__(self, num_search=10, k_best=5, l2_threshold=0.4, verbose=False):
-        self.num_search = num_search
-        self.k_best = k_best
-        self.l2_threshold = l2_threshold
-        self.verbose = verbose
+class Tool(BaseTool):
+    def __init__(self, tool_name, **kwargs):
+        super(Tool, self).__init__(tool_name=tool_name, tool_object=self)
+        self.num_search = kwargs.get('num_search', 10)
+        self.k_best = kwargs.get('k_best', 5)
+        self.l2_threshold = kwargs.get('l2_threshold', 0.4)
+        self.verbose = kwargs.get('verbose', False)
         self.db = None
 
         load_dotenv()
@@ -36,7 +39,6 @@ class GoogleSearch:
 
         self.embeddings = OpenAIEmbeddings()
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
-        self.logger = logging.getLogger('chat_log')
 
     def __get_pages(self, query):
         if self.verbose:
@@ -66,7 +68,9 @@ class GoogleSearch:
         return docs
     
     def __get_documents(self, items):
-        loop = asyncio.get_event_loop()
+        # loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         return loop.run_until_complete(self.__get_documents_async(items))
     
     def __store_documents(self, docs):
@@ -108,6 +112,8 @@ class GoogleSearch:
         summary = openai.ChatCompletion.create(model='gpt-3.5-turbo',
                                     messages=[{'role': 'user', 'content': prompt}],
                                     temperature=0)
+        if self.verbose:
+            print(f'Summary: {summary.choices[0].message.content}\nReferences: {references}')
         return summary.choices[0].message.content, references
     
     def __call__(self, query):

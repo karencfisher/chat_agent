@@ -1,0 +1,6 @@
+[
+    {"name": "search",
+     "module": "google_search",
+     "description": "Use to search for real time or general up to date information from the internet",
+     "parameters": {"k_best": 5, "verbose": false}}
+]
