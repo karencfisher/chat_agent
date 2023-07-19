@@ -8,7 +8,7 @@ import json
 class Text2Speech:
    def __init__(self):
       # get voice specification
-      path = os.path.join('chat_agent', 'voice', 'voice.json')
+      path = os.path.join('voice', 'voice.json')
       with open(path, 'r') as FP:
          info = json.load(FP)
 

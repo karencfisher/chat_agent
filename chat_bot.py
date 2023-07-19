@@ -16,8 +16,8 @@ class Bot:
         if voice:
             # initialize voice functions
             print('Initializing speech...')
-            from chat_agent.voice.vosk_recognizer import SpeechRecognize
-            from chat_agent.voice.tts import Text2Speech
+            from voice.vosk_recognizer import SpeechRecognize
+            from voice.tts import Text2Speech
 
             self.recog = SpeechRecognize()
             self.tts = Text2Speech()

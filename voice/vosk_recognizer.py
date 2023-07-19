@@ -10,11 +10,11 @@ import numpy as np
 
 class SpeechRecognize:
     def __init__(self):
-        path = os.path.join('chat_agent', 'voice', 'vosk_config.json')
+        path = os.path.join('voice', 'vosk_config.json')
         with open(path, 'r') as FP:
             self.config = json.load(FP)
         vosk.SetLogLevel(-1)
-        model_path = os.path.join('chat_agent', 'voice', self.config['model'])
+        model_path = os.path.join('voice', self.config['model'])
         model = vosk.Model(model_path)
         self.recognizer = vosk.KaldiRecognizer(model, 16000)
 

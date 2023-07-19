@@ -9,7 +9,6 @@ from threading import Thread
 from queue import Queue, Empty
 from dotenv import load_dotenv
 
-# speech recognition and synthesis
 try:
     from chat_agent.memory.context import Context
 except:
