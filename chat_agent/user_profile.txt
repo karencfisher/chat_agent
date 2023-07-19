@@ -1,0 +1,4 @@
+name: karen
+location: Moab, Utah
+age: 64
+occupation: AI developer

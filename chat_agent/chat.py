@@ -66,8 +66,14 @@ class ChatAgent:
         with open(prompt_path, 'r') as FILE:
            sys_prompt = FILE.read()
 
+        # get user profile
+        profile_path = os.path.join('chat_agent', 'user_profile.txt')
+        with open(profile_path, 'r') as FILE:
+            user_profile = FILE.read()
+
         sys_prompt = sys_prompt.format(
-                today = datetime.date.today(),
+                today=datetime.date.today(),
+                user_profile=user_profile,
                 tool_description='\n'.join(tool_descriptions),
                 tool_names=', '.join(list(self.tools.keys())))
         
