@@ -113,9 +113,9 @@ class Tool(BaseTool):
                                     temperature=0)
         if self.verbose:
             print(f'Summary: {summary.choices[0].message.content}\nReferences: {references}')
-        return summary.choices[0].message.content, references
+        return (summary.choices[0].message.content, references)
     
-    def __call__(self, query):
+    def __call__(self, query, tool_queue):
         # if we have data, see if query is valid for it
         if self.db is not None:
             if self.verbose:
@@ -128,7 +128,8 @@ class Tool(BaseTool):
                 if self.verbose:
                     print('Re-using previous search data')
                     return self.__timeit(self.__get_summary, (selections,))
-                return self.__get_summary(selections)
+                tool_queue.put(self.__get_summary(selections))
+                return
             else:
                 self.logger.info('No relevant documents in cache, searching for more.')
                 if self.verbose:
@@ -146,13 +147,13 @@ class Tool(BaseTool):
             
             overall_elapsed = time.time() - overall_start
             print(f'Total elapsed time = {overall_elapsed: .3f}')
-            return output
         else:
             items = self.__get_pages(query)       
             docs = self.__get_documents(items)
             self.__store_documents(docs)
             selections = self.__get_selections(query)
-            return self.__get_summary(selections)
+            output = self.__get_summary(selections)
+        tool_queue.put(output)
     
     def __timeit(self, func, args):
         start = time.time()

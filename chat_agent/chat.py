@@ -6,7 +6,7 @@ import re
 import importlib
 import datetime
 from threading import Thread
-from queue import Queue
+from queue import Queue, Empty
 from dotenv import load_dotenv
 
 # speech recognition and synthesis
@@ -80,6 +80,7 @@ class ChatAgent:
         self.logger.info(f'User\'s message: {text}')
         self.chat_logger.log_message(f'Human: {text}')
         done = False
+        tool_queue = Queue()
         while not done:
             self.context.add(role='user', text=text)
             prompt = self.context.get_prompt()
@@ -101,13 +102,19 @@ class ChatAgent:
             if tool not in list(self.tools.keys()):
                 raise KeyError('Invalid tool name')
             
-            result, metadata = self.tools[tool](tool_input)
-            if metadata is not None:
+            tool_done = False
+            tool_thread = Thread(target=self.tools[tool], args=(tool_input, tool_queue))
+            tool_thread.start()
+            message_queue.put((False, "Working...", None))
+            while not tool_done:
                 try:
-                    self.tools['tool'].post_process(metadata)
-                except:
-                    pass
-
+                    response = tool_queue.get(block=True, timeout=10)
+                except Empty:
+                    message_queue.put((False, "Working...", None))
+                else:
+                    tool_done = True
+            tool_thread.join()
+            result, metadata = response
             text = f'{text}\n\nObservation: {result}'
                         
         self.chat_logger.log_message(f'AI: {tool_input}')
