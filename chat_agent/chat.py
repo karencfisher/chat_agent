@@ -77,24 +77,34 @@ class ChatAgent:
                                max_context_tokens=config['max_context'])
 
     def __call__(self, text, message_queue):
+        # log user input
         self.logger.info(f'User\'s message: {text}')
         self.chat_logger.log_message(f'Human: {text}')
-        done = False
+
+        # setup queue to receive response from tool
         tool_queue = Queue()
+
+        # loop to perform actions scheduled by the LLM
+        done = False
         while not done:
+            # get complete user prompt
             self.context.add(role='user', text=text)
             prompt = self.context.get_prompt()
+
+            # prompt the LLM
             output = self.chat(prompt)
             self.logger.info(f'AI: {output}')
             if self.verbose:
                 print(output)
             self.context.add(role='assistant', text=output)
 
+            # parse response from the LLM
             tool, tool_input, thought = self.__parse(output)
             if thought is not None:
                 self.chat_logger.log_message(f'AI: {thought}')
                 message_queue.put((False, thought, None))
 
+            # if action is "Final Answer" we are done. Otherwise validate response
             if tool == 'Final Answer':
                 done = True
                 metadata = None
@@ -102,11 +112,14 @@ class ChatAgent:
             if tool not in list(self.tools.keys()):
                 raise KeyError('Invalid tool name')
             
+            # call tool in a new thread so we can monitor its status
             tool_done = False
             tool_thread = Thread(target=self.tools[tool], args=(tool_input, tool_queue))
             tool_thread.start()
             message_queue.put((False, "Working...", None))
             while not tool_done:
+                # wait for response from tool. If iteration times out, send
+                # message to apprise user it is still in process 
                 try:
                     response = tool_queue.get(block=True, timeout=10)
                 except Empty:
@@ -117,6 +130,7 @@ class ChatAgent:
             result, metadata = response
             text = f'{text}\n\nObservation: {result}'
                         
+        # log final result and push to calling thread
         self.chat_logger.log_message(f'AI: {tool_input}')
         message_queue.put((True, tool_input, metadata))
     

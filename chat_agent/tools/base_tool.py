@@ -15,8 +15,12 @@ class BaseTool:
     def get_object(self):
         return self.tool_object
 
-    def __call__(self, input):
-        raise NotImplementedError('__call__ method not implemented.')
+    def __call__(self, input, tool_queue):
+        result = self.run(input)
+        tool_queue.put(result)
+    
+    def run(self, input):
+        return (f'Dummy tool, input was {input}', None)
     
     def post_process(self, **args):
         raise NotImplementedError('post_process method not implemented.')
