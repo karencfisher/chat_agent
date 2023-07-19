@@ -68,7 +68,6 @@ class Tool(BaseTool):
         return docs
     
     def __get_documents(self, items):
-        # loop = asyncio.get_event_loop()
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         return loop.run_until_complete(self.__get_documents_async(items))
@@ -162,23 +161,3 @@ class Tool(BaseTool):
         print(f'elapsed time current step = {elapsed: .3f}')
         return output
 
-    
-def test():
-    search = GoogleSearch(verbose=True)
-
-    done = False
-    while not done:
-        query = input('==> ')
-        if query == 'goodbye':
-            done = True
-        else:
-            summary, references = search(query)
-            print(f'I enquired:\n\"{query}\"\n')
-            print(f'I learned:\n{summary}\n')
-            print(f'My references:')
-            for reference in references:
-                title, link = reference
-                print(f'{title}: {link}')
-
-if __name__ == '__main__':
-    test()
