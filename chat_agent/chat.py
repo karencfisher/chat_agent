@@ -225,7 +225,6 @@ class Bot:
 def main():
     params = {'voice': False, 'verbose': False}
     if len(sys.argv) > 1:
-        print(list(sys.argv))
         for arg in sys.argv[1:]:
             if arg in params.keys():
                 params[arg] = True
