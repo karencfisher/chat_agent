@@ -4,7 +4,6 @@ text (terminal) or voice.
 '''
 
 import sys
-import importlib
 from threading import Thread
 from queue import Queue
 
