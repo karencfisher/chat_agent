@@ -2,9 +2,10 @@ import logging
 
 
 class BaseTool:
-    def __init__(self, tool_name, tool_object, **kwargs):
+    def __init__(self, tool_name, tool_object, llm, **kwargs):
         self.__tool_name = tool_name
         self.__tool_object = tool_object
+        self.llm = llm
         self.logger = logging.getLogger('chat_log')
 
     @property 

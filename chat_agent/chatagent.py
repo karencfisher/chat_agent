@@ -55,7 +55,7 @@ class ChatAgent:
                 module = importlib.import_module('chat_agent.tools.' +  tool['module'])
             except:
                 module = importlib.import_module('tools.' +  tool['module'])
-            object = module.Tool(tool['name'], **tool['parameters'])
+            object = module.Tool(tool['name'], self.chat, **tool['parameters'])
             self.tools[tool['name']] = object
             tool_descriptions.append(f'{tool["name"]}: {tool["description"]}')
 

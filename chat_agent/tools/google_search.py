@@ -1,15 +1,10 @@
 import requests
-from bs4 import BeautifulSoup
 import os
-import numpy as np
 import asyncio
-import openai
 import time
-import logging
 
 from dotenv import load_dotenv
 from collections import defaultdict
-from fake_useragent import UserAgent
 
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -24,8 +19,8 @@ except:
 
 
 class Tool(BaseTool):
-    def __init__(self, tool_name, **kwargs):
-        super(Tool, self).__init__(tool_name=tool_name, tool_object=self)
+    def __init__(self, tool_name, llm, **kwargs):
+        super(Tool, self).__init__(tool_name, self, llm)
         self.num_search = kwargs.get('num_search', 10)
         self.k_best = kwargs.get('k_best', 5)
         self.l2_threshold = kwargs.get('l2_threshold', 0.4)
@@ -33,7 +28,6 @@ class Tool(BaseTool):
         self.db = None
 
         load_dotenv()
-        openai.api_key = os.getenv('OPENAI_API_KEY')
         self.google_api_key = os.getenv('GOOGLE_API_KEY')
         self.google_cx = os.getenv('GOOGLE_CSE_ID')
 
@@ -87,7 +81,6 @@ class Tool(BaseTool):
             print('Semantic search on vector DB')
         # vectorize documents and select best k_best
         selections = self.db.similarity_search_with_score(query, k=self.k_best)
-        self.logger.info(f'Relevant documents: {selections}')
         if self.verbose:
             print(f'The relevant documents I found:')
             for selection in selections:
@@ -108,12 +101,11 @@ class Tool(BaseTool):
 
         # have LMM summarize extracted information
         prompt = f'Write a detailed summary of the following information: {selections}'
-        summary = openai.ChatCompletion.create(model='gpt-3.5-turbo',
-                                    messages=[{'role': 'user', 'content': prompt}],
-                                    temperature=0)
+        summary = self.llm([{'role': 'user', 'content': prompt}])
+        summary = f'{references}\n\n{summary}'
         if self.verbose:
-            print(f'Summary: {summary.choices[0].message.content}\nReferences: {references}')
-        return (summary.choices[0].message.content, references)
+            print(f'Summary: {summary}')
+        return (summary, references)
     
     def run(self, query):
         # if we have data, see if query is valid for it
@@ -152,6 +144,8 @@ class Tool(BaseTool):
             self.__store_documents(docs)
             selections = self.__get_selections(query)
             output = self.__get_summary(selections)
+            
+        self.logger.info(f'Relevant documents: {selections}')
         return output
     
     def __timeit(self, func, args):

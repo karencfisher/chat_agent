@@ -1,29 +1,24 @@
-import os
 import openai
-import logging
-from dotenv import load_dotenv
+try:
+    from chat_agent.LLMs.chat_base import ChatBase
+except:
+    from LLMs.chat_base import ChatBase
 
 
-class ChatModel:
+class ChatModel(ChatBase):
     def __init__(self, config):
-        load_dotenv()
-        openai.api_key = os.getenv('OPENAI_API_KEY')
+        super(ChatModel, self).__init__(config)
+        openai.api_key = self.api_key
 
-        self.config = config
-
-        self.logger = logging.getLogger('chat_log')
-        self.logger.info(f'Using configuration {self.config}')
-
-    def __call__(self, prompt):
-        self.logger.info(f'Prompt: {prompt}')
+    def complete(self, prompt):
         result = openai.ChatCompletion.create(
             model=self.config['model'],
             messages = prompt,
-            temperature=self.config['temperature'],
-            top_p=self.config['top_p'],
-            n=self.config["n"],
-            presence_penalty=self.config["presence_penalty"],
-            frequency_penalty=self.config["frequency_penalty"],
-            max_tokens=self.config["max_tokens"]
+            temperature=self.config.get('temperature', 0),
+            top_p=self.config.get('top_p', 1),
+            n=self.config.get('n', 1),
+            presence_penalty=self.config.get('presence_penalty', 0),
+            frequency_penalty=self.config.get('frequency_penalty', 0),
+            max_tokens=self.config['max_tokens']
         )
         return result.choices[0].message.content

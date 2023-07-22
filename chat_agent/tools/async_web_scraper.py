@@ -1,10 +1,11 @@
-# Thank you to ChatGPT for its assistance!
+''' 
+Ansynchronous web scraping for search tool.
+Thank you to ChatGPT for its assistance!
+'''
 import asyncio
 import aiohttp
 import logging
-import os
 from fake_useragent import UserAgent
-from datetime import datetime
 from bs4 import BeautifulSoup
 import re
 

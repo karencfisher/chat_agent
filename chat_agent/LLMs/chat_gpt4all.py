@@ -1,20 +1,16 @@
-import os
 from gpt4all import GPT4All
-import logging
-from dotenv import load_dotenv
+try:
+    from chat_agent.LLMs.chat_base import ChatBase
+except:
+    from LLMs.chat_base import ChatBase
 
 
-class ChatModel:
+class ChatModel(ChatBase):
     def __init__(self, config):
-        self.config = config
-
+        super(ChatModel, self).__init__(config)
         self.gpt4all = GPT4All(self.config['model'])
 
-        self.logger = logging.getLogger('chat_log')
-        self.logger.info(f'Using configuration {self.config}')
-
-    def __call__(self, prompt):
-        self.logger.info(f'Prompt: {prompt}')
+    def complete(self, prompt):
         response =  self.gpt4all.chat_complete(
             messages=prompt,
             verbose=False,
