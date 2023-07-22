@@ -2,5 +2,15 @@
     {"name": "search",
      "module": "google_search",
      "description": "Use to search for real time or general up to date information from the internet",
-     "parameters": {"l2_threshold": 0.3}}
+     "parameters": {"l2_threshold": 0.3}},
+
+     {"name": "phone",
+     "module": "phone_sim",
+     "description": "Use this tool to call a phone number",
+     "parameters": {}},
+
+     {"name": "open_link",
+     "module": "web_browser",
+     "description": "Use this tool to open a web page in the local browser",
+     "parameters": {"target": 2}}
 ]

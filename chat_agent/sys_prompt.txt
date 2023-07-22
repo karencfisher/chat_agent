@@ -8,7 +8,7 @@ their location and interests.
 User profile:
 {user_profile}
 
-Deem any tasks as best as you can using the following tools: 
+Determine any tasks as best as you can using the following tools: 
 
 {tool_description}
 

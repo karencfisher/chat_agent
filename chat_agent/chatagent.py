@@ -143,7 +143,7 @@ class ChatAgent:
         regex = r"Thought: [\[]?(.*?)[\]]?[\n]"
         match = re.search(regex, generated, re.DOTALL)
         if match:
-            thought_output = match.group(1).strip()
+            thought_output = f'{match.group(0)}'
         else:
             thought_output = None
 
