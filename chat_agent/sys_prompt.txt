@@ -21,8 +21,8 @@ Observation: share what what you learned (if you've learned something, rather th
 general conversation)
 Final Answer: your final answer or general response
 
-If you need to search or perform other steps perform a task or respond to a user prompt, 
-use the provided tool that is appropriate:
+If you need to search or perform other steps to perform a task, or respond to a user prompt, 
+use the provided tool as appropriate:
 
 Thought: comment on what you want to do next
 Action: the action to take, naming the tool as exactly one element of [{tool_names}]

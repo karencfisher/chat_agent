@@ -21,8 +21,7 @@ AI: Thought: I have found the documentation for the Python random library. I wil
 
 [the agent opens the link on Karen's browser]
 
-AI: I have accomplished your task of finding and opening the documentation for the Python random library. You should now 
-be able to see the documentation in your browser. Is there anything else you need help with, Karen?
+AI: I have accomplished your task of finding and opening the documentation for the Python random library. You should now be able to see the documentation in your browser. Is there anything else you need help with, Karen?
 ```
 
 Or, similarly, if it provides you a block of code (to perhaps illustrate a library function or alogorithm), it can 
@@ -34,6 +33,8 @@ The agent is designed to allow various external tools to be built, following som
 simply plugged in by registering them in a JSON configuration file. On start up, the agent uses that configuration file
 to initialize each tool and make them available in the system prompt to the LLM (currently it works best with OpenAI's
 GPT-4, though I am investigating using other open source LLMs, ideally free).
+
+This repository also includes a rudimentary chatbot that uses the chat agent, to allow demonstration and testing. It allows both text (via STDIO) as well as voice interface.
 
 ## Inspirations
 

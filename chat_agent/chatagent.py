@@ -6,7 +6,6 @@ import importlib
 import datetime
 from threading import Thread
 from queue import Queue, Empty
-from dotenv import load_dotenv
 
 try:
     from chat_agent.memory.context import Context
@@ -19,7 +18,6 @@ class ChatAgent:
 
     def __init__(self, verbose=False):
         self.verbose = verbose
-        load_dotenv()
 
         # setup logging
         now = datetime.datetime.now()
