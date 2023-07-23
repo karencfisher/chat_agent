@@ -2,15 +2,18 @@
     {"name": "search",
      "module": "google_search",
      "description": "Use to search for real time or general up to date information from the internet",
-     "parameters": {"l2_threshold": 0.3}},
-
-     {"name": "phone",
-     "module": "phone_sim",
-     "description": "Use this tool to call a phone number",
-     "parameters": {}},
+     "parameters": {"l2_threshold": 0.3},
+     "wait": 10},
 
      {"name": "open_link",
      "module": "web_browser",
      "description": "Use this tool to open a web page in the local browser",
-     "parameters": {"target": 2}}
+     "parameters": {"target": 2},
+     "wait": 0},
+
+     {"name": "display_code",
+     "module": "display_code",
+     "description": "Use this tool to display code instead of including in response to user",
+     "parameters": {},
+     "wait": 0}
 ]

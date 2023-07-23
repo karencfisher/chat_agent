@@ -2,7 +2,7 @@ import logging
 
 
 class BaseTool:
-    def __init__(self, tool_name, tool_object, llm, **kwargs):
+    def __init__(self, tool_name, tool_object, llm,**kwargs):
         self.__tool_name = tool_name
         self.__tool_object = tool_object
         self.llm = llm
@@ -18,6 +18,8 @@ class BaseTool:
 
     def __call__(self, input, tool_queue):
         result = self.run(input)
+        if tool_queue is None:
+            return result
         tool_queue.put(result)
     
     def run(self, input):

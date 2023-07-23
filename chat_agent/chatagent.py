@@ -54,7 +54,7 @@ class ChatAgent:
             except:
                 module = importlib.import_module('tools.' +  tool['module'])
             object = module.Tool(tool['name'], self.chat, **tool['parameters'])
-            self.tools[tool['name']] = object
+            self.tools[tool['name']] = {"object": object, "wait": tool['wait']}
             tool_descriptions.append(f'{tool["name"]}: {tool["description"]}')
 
         # setup sys prompt
@@ -96,8 +96,6 @@ class ChatAgent:
             # prompt the LLM
             output = self.chat(prompt)
             self.logger.info(f'AI: {output}')
-            if self.verbose:
-                print(output)
             self.context.add(role='assistant', text=output)
 
             # parse response from the LLM
@@ -114,28 +112,51 @@ class ChatAgent:
             if tool not in list(self.tools.keys()):
                 raise KeyError('Invalid tool name')
             
-            # call tool in a new thread so we can monitor its status
-            tool_done = False
-            tool_thread = Thread(target=self.tools[tool], args=(tool_input, tool_queue))
-            tool_thread.start()
-            message_queue.put((False, "Working...", None))
-            while not tool_done:
-                # wait for response from tool. If iteration times out, send
-                # message to apprise user it is still in process 
-                try:
-                    response = tool_queue.get(block=True, timeout=10)
-                except Empty:
-                    message_queue.put((False, "Working...", None))
-                else:
-                    tool_done = True
-            tool_thread.join()
+            # if wait is 0, run directly and block for response. Otherwise, run
+            # in new thread so we can track it's progress
+            if self.tools[tool]['wait'] > 0:
+                response = self.__wait_for_tool(tool, tool_input, message_queue)
+            else:
+                response = self.tools[tool]['object'](tool_input, None)
+                if response is None:
+                    # we're in trouble
+                    raise TimeoutError(f'The {tool} tool did not respond')
+
             result, metadata = response
             text = f'{text}\n\nObservation: {result}'
                         
         # log final result and push to calling thread
         self.chat_logger.log_message(f'AI: {tool_input}')
         message_queue.put((True, tool_input, metadata))
-    
+
+    def __wait_for_tool(self, tool, tool_input, message_queue, max_iter=10):
+        # setup queue to receive response from tool
+        tool_queue = Queue()
+
+        # call tool in a new thread so we can monitor its status
+        tool_done = False
+        tool_thread = Thread(target=self.tools[tool]['object'], 
+                             args=(tool_input, tool_queue))
+        tool_thread.start()
+        message_queue.put((False, "Working...", None))
+
+        iter = 1
+        while not tool_done:
+            # wait for response from tool. If iteration times out, send
+            # message to apprise user it is still in process 
+            try:
+                response = tool_queue.get(block=True, timeout=self.tools[tool]['wait'])
+            except Empty:
+                message_queue.put((False, "Working...", None))
+                if iter == max_iter:
+                    message_queue.put((False, "Tool timedout", None))
+                    return None
+                iter += 1
+            else:
+                tool_done = True
+        tool_thread.join()
+        return response
+
     def __parse(self, generated: str):
         # check for thoughts to record
         regex = r"Thought: [\[]?(.*?)[\]]?[\n]"
