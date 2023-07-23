@@ -1,5 +1,7 @@
 # chat_agent
 
+## About
+
 This is building a conversational AI agent, integrating ideas about autonomous agents and 
 [ReAct](https://react-lm.github.io/). The ultimate goal is to have a friendly, empathic, and helpful
 virtual assistant that can run in the background as one works. It's primary modality is to use
@@ -24,7 +26,10 @@ AI: I have accomplished your task of finding and opening the documentation for t
 
 Or, similarly, if it provides you a block of code (to perhaps illustrate a library function or alogorithm), it can 
 load the code into a REPL (for example, if Python) which can then be executed, modified, etc. Otherwise, a simple 
-popup window from which you can copy the code and paste it into your IDE.
+popup window from which you can copy the code and paste it into your IDE. The code block is removed from any other
+comments that will be presented to the user, such as by voice synthesis.
+
+## Inspirations
 
 I am inspired by
 frameworks such as [LangChain](https://python.langchain.com/docs/get_started/introduction.html)
