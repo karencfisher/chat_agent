@@ -144,6 +144,8 @@ AI: I have opened the link to "Moab Weather Forecast and Reports (84532)" for yo
 
 ```
 
+(Notice how it provided the links in markdown here, no less.)
+
 Or, if you prefer, you can make one prompt to chain the two tasks together, as in the example earlier above. ("Find and display ...")
 
 ## Inspirations
