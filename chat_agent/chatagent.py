@@ -9,8 +9,10 @@ from queue import Queue, Empty
 
 try:
     from chat_agent.memory.context import Context
+    from chat_agent.display_code import CodeDisplay
 except:
     from memory.context import Context
+    from display_code import CodeDisplay
 
 
 class ChatAgent:
@@ -168,6 +170,15 @@ class ChatAgent:
 
         # is final answer?
         if 'Final Answer:' in generated:
+            # filter for code examples (delimited by ```). If so, display code in pop-up
+            # window and replace it with "<displayed>" in user response
+            pattern = r"```(.*?)```"
+            match = re.search(pattern, generated, re.DOTALL)
+            if match is not None:
+                inner_text = match.group(0)  
+                display = CodeDisplay()
+                display(inner_text)
+                generated = generated.replace(inner_text, '<Displayed>').strip()
             return "Final Answer", generated.split('Final Answer:')[-1].strip(), thought_output
 
         # find action

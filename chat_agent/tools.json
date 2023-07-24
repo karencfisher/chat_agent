@@ -9,11 +9,5 @@
      "module": "web_browser",
      "description": "Use this tool to open a web page in the local browser",
      "parameters": {"target": 2},
-     "wait": 0},
-
-     {"name": "display_code",
-     "module": "display_code",
-     "description": "Use this tool to display code instead of including in response to user",
-     "parameters": {},
      "wait": 0}
 ]

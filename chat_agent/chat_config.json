@@ -2,4 +2,4 @@
  "api_key": "OPENAI_API_KEY",
  "model": "gpt-4",
  "max_context": 4096,
- "max_tokens": 128}
+ "max_tokens": 512}
