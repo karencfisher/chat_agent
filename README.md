@@ -74,6 +74,13 @@ If you want to talk instead of typing, instead run
 python chat_bot.py voice
 ```
 
+The default configuration (chat_agent/chat_config.json) is set up forOpenAI, and the GPT-4 model, as it handles instructions as best. However, it is pricier (i.e., $0.03/thousand input tokens, and $0.06/thousand output tokens). It can add up.
+
+OpenAI's chat-3.5.turbo model is cheaper ($0.0015/thousend input tokens, $0.002/thousand output.) However, it is less instructable -- it might, for example, not heed the system prompt and thus not even use the search tool. Instead, it will just hallucinate.
+
+I am working on working with open source/free LLMs, but so far none follow instructions as well as GPT-4 does.
+
+Also, in any case, currently I am using OpenAI's embedding model (Ada v2) to embed documents as part of the Google search tool. Those cost $0.0001/thousand tokens. (You will need an OpanAI API key, even if you are experimenting with other LLMs. I plan to migrate this to an open source/free sentence embedding model in the future).
 
 ## Inspirations
 
