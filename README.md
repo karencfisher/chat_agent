@@ -24,10 +24,7 @@ AI: Thought: I have found the documentation for the Python random library. I wil
 AI: I have accomplished your task of finding and opening the documentation for the Python random library. You should now be able to see the documentation in your browser. Is there anything else you need help with, Karen?
 ```
 
-Or, similarly, if it provides you a block of code (to perhaps illustrate a library function or alogorithm), it can 
-load the code into a REPL (for example, if Python) which can then be executed, modified, etc. Otherwise, a simple 
-popup window from which you can copy the code and paste it into your IDE. The code block is removed from any other
-comments that will be presented to the user, such as by voice synthesis.
+For code written for us by the AI, it is separated out and displayed it in a popup window. From there one can copy the code to paste into their IDE, for example, to test, add too, etc.
 
 The agent is designed to allow various external tools to be built, following some basic guidelines, and more or less
 simply plugged in by registering them in a JSON configuration file. On start up, the agent uses that configuration file
@@ -35,6 +32,48 @@ to initialize each tool and make them available in the system prompt to the LLM 
 GPT-4, though I am investigating using other open source LLMs, ideally free).
 
 This repository also includes a rudimentary chatbot that uses the chat agent, to allow demonstration and testing. It allows both text (via STDIO) as well as voice interface.
+
+## Want to play with it?
+
+This is a development project, so the best thing would do is to download or clone this repository. E.g.,
+
+```
+1) git clone https://github.com/karencfisher/chat_agent.git
+
+2) cd chat_agent
+
+2) create a virtual environment, and activate it (Conda, venv, etc.)
+
+3) pip install -f requirements.txt
+```
+
+And you should be good to go. You will need to make a .env file to contain your API keys. Here is a template:
+
+```
+OPENAI_API_KEY = <your openai API key>
+GOOGLE_API_KEY = <your Google API key>
+GOOGLE_CSE_ID = <your Google custom search enine>
+PALM_API_KEY = <your Google PaLM API key>
+```
+
+For how to setup Google Programmable Search Engine, get API key, CSE, etc, click [here](https://developers.google.com/custom-search/v1/overview)
+
+To setup OpenAI API use, and get an API key [start here](https://platform.openai.com/)
+
+For Google PaLM 2 API, [start here](https://developers.generativeai.google/) (Has not worked yet with the chat agent, however.)
+
+With all that done, you should be good to go. To run the chat_bot, at the project root, run
+
+```
+python chat_bot.py
+```
+
+If you want to talk instead of typing, instead run
+
+```
+python chat_bot.py voice
+```
+
 
 ## Inspirations
 
