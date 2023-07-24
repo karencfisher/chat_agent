@@ -156,7 +156,7 @@ Or, if you prefer, you can make one prompt to chain the two tasks together, as i
 
 A popular use for LLMs has become having them writing code. This can be educational and as well useful to save time working on development projects.
 
-For code written for us by the AI, it is filtered out from the final respones and is displayed in a popup window. From there one can copy the code to paste into their IDE, for example, to test, tweak, extend, learn from, etc. For example, asked to write a C++ program to calculate the first 100 prime numbers, the agent displays it. This will prevent the chat bot from reciting a bunch of code outloud, if in voice mode!
+For code written for us by the AI, it is filtered out from the final respones and is displayed in a popup window. From there one can copy the code to paste into their IDE, for example, to test, tweak, extend, learn from, etc. For example, asked to write a C# program to calculate the first 100 prime numbers, the agent displays it. This will prevent the chat bot from reciting a bunch of code outloud, if in voice mode!
 
 ![Screenshot](Code_display_screenshot.jpg)
 
