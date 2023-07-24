@@ -107,7 +107,7 @@ The search tool I have here is pretty intensive.
 
 5) The LLM is then prompted with these as "observations" along with the original question, to write a final answer.
 
-You can also, if you like, readily then answer the AI for the links it consulted, and have one or more of them opened in your default browser. E.g.
+You can also, if you like, readily then ask the AI for the links it consulted, and then have it open one or more in your default browser. E.g.
 
 ```
 Human: what is the forecast for today?
@@ -123,7 +123,6 @@ AI: The weather in Moab, Utah today is expected to be partly cloudy with high te
 Human: What are the resources you consulted?
 
 AI: Thought: I will provide the links to the resources I consulted for the weather forecast.
-
 
 AI: Here are the resources I consulted for the weather forecast:
 
@@ -145,7 +144,7 @@ AI: I have opened the link to "Moab Weather Forecast and Reports (84532)" for yo
 
 ```
 
-Or, you can make one prompt to chain the two tasks together, as in the example earlier above. ("Find and display ..." for example.)
+Or, if you prefer, you can make one prompt to chain the two tasks together, as in the example earlier above. ("Find and display ...")
 
 ## Inspirations
 
