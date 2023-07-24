@@ -47,7 +47,7 @@ This is a development project, so the best thing would do is to download or clon
 3) pip install -f requirements.txt
 ```
 
-And you should be good to go. You will need to make a .env file to contain your API keys. Here is a template:
+You will need to make a .env file to contain your API keys. Here is a template:
 
 ```
 OPENAI_API_KEY = <your openai API key>
@@ -74,7 +74,9 @@ If you want to talk instead of typing, instead run
 python chat_bot.py voice
 ```
 
-The default configuration (chat_agent/chat_config.json) is set up forOpenAI, and the GPT-4 model, as it handles instructions as best. However, it is pricier (i.e., $0.03/thousand input tokens, and $0.06/thousand output tokens). It can add up.
+### Configuration, and costs
+
+The default configuration (chat_agent/chat_config.json) is set up forOpenAI, and the GPT-4 model, as it handles instructions  best. However, it is pricier (i.e., $0.03/thousand input tokens, and $0.06/thousand output tokens). As the context (input to the model) grows as you chat (up to 8k tokens), it can add up. A single user prompt and model response, after a while, might cost around $0.30, for example. If using tools, including search, the cost can be more, as behind the scenes the agent will also call the LLM for intermittent steps, including having it summarize search results. As much as $1.20 or so.
 
 OpenAI's chat-3.5.turbo model is cheaper ($0.0015/thousend input tokens, $0.002/thousand output.) However, it is less instructable -- it might, for example, not heed the system prompt and thus not even use the search tool. Instead, it will just hallucinate.
 
