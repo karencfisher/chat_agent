@@ -150,7 +150,7 @@ AI: I have opened the link to "Moab Weather Forecast and Reports (84532)" for yo
 
 ![Screenshot](Browser_screenshot.jpg)
 
-Or, if you prefer, you can make one prompt to chain the two tasks together, as in the example earlier above. Or, you may ask the agent to find and display documentation such as for a Python module such as Random. 
+Or, if you prefer, you can make one prompt to chain the two tasks together, as in the example earlier above. Or, you may ask the agent to find and display documentation such as for a Python module such as Random. (There is no gurantee it will always get the 'official' docs. Sometimes it will prefer, for example, "geek for geeks.")
 
 ![Screenshot](Documentation_screenshot.jpg)
 
