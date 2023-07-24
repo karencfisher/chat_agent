@@ -3,8 +3,12 @@
 ## About
 
 This is building a conversational AI agent, integrating ideas about autonomous agents and 
-[ReAct](https://react-lm.github.io/). The ultimate goal is to have a friendly, empathic, and helpful
-virtual assistant that can run in the background as one works. It's primary modality is to use
+[ReAct](https://react-lm.github.io/). It can take complex or even vague tasks, and use external tools to accomplish it using logical steps.
+
+The ultimate goal is to have a friendly, empathic, and helpful
+virtual assistant that can run in the background as one works. 
+
+It's primary modality is intended to use
 voice, with the ability to also display useful information on one's screen. For example, if the agent
 has performed an online search and summarizes the information it found, it can also provide you
 with the relevant URLs it consulted and, on request, open one or more of the links in your local
@@ -23,8 +27,6 @@ AI: Thought: I have found the documentation for the Python random library. I wil
 
 AI: I have accomplished your task of finding and opening the documentation for the Python random library. You should now be able to see the documentation in your browser. Is there anything else you need help with, Karen?
 ```
-
-For code written for us by the AI, it is separated out and displayed in a popup window. From there one can copy the code to paste into their IDE, for example, to test, tweak, extend, learn from, etc.
 
 The agent is designed to allow various external tools to be built, following some basic guidelines, and more or less
 simply plugged in by registering them in a JSON configuration file. On start up, the agent uses that configuration file
@@ -146,9 +148,27 @@ AI: I have opened the link to "Moab Weather Forecast and Reports (84532)" for yo
 
 ```
 
-(Notice how it provided the links in markdown here, no less.)
+![Screenshot](Browser_screenshot.jpg)
 
 Or, if you prefer, you can make one prompt to chain the two tasks together, as in the example earlier above. ("Find and display ...")
+
+## Code examples
+
+A popular use for LLMs has become having them writing code. This can be educational and as well useful to save time working on development projects.
+
+For code written for us by the AI, it is filtered out from the final respones and is displayed in a popup window. From there one can copy the code to paste into their IDE, for example, to test, tweak, extend, learn from, etc. For example, asked to write a C++ program to calculate the first 100 prime numbers, the agent displays it. This will prevent the chat bot from reciting a bunch of code outloud, if in voice mode!
+
+![Screenshot](Code_display_screenshot.jpg)
+
+The agent will also, in this example, respond directly to the user with
+
+```
+AI: Here's a simple C# program that calculates the first 100 prime numbers:
+
+<Displayed>
+
+This program uses a while loop to keep generating numbers until we have found 100 prime numbers. For each number, it checks if it is divisible by any number up to its square root (since a larger factor of the number would be a multiple of smaller factor that has already been checked). If it finds a divisor, it breaks out of the loop and moves on to the next number. If no divisors are found, it prints the number and increments the count of prime numbers found.
+```
 
 ## Inspirations
 
