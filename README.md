@@ -99,13 +99,15 @@ The search tool I have here is pretty intensive.
 
 1) Given a query, it uses Google's programmable search engine to find 10 (by default) pages.
 
-2) Ansynchronously, it requests each page. If successful, it scrapes the text from the page. It then slits the text to chunks, vectorizes them, and stores them in an FAISS vector database (in RAM). The original URLs are also stored as metadata.
+2) Ansynchronously, it requests each page. If successful, it scrapes the text from the page. It then splits the text into chunks (documents), vectorizes them, and stores them in an FAISS vector database (in RAM). The original URLs are also stored with the documents as metadata.
 
-3) Using the same query, it peforms semantic search on the vector DB. It finds (by default) the best 5 matching documents (chunks). It also gathers the relevant URLs from the metadata.
+3) Using the same query, it peforms semantic search on the vector DB. It finds (by default) the best 5 matching documents (chunks). It also gathers the relevant URLs from the document metadata.
 
 4) The relevant documents are then summarized by the LLM. 
 
-5) The LLM is then prompted with these as "observations" along with the original question, to write a final answer.
+5) The LLM is then prompted with this summary and the URLs as "observations," along with the original question, to write a final answer.
+
+The vector DB chaches any pages it visits throughout the session. This way, if you ask a follow upp question addressable by the previous search results, it will not need to initiate a new search. It can use the cached data.
 
 You can also, if you like, readily then ask the AI for the links it consulted, and then have it open one or more in your default browser. E.g.
 
