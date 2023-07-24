@@ -107,7 +107,7 @@ The search tool I have here is pretty intensive.
 
 5) The LLM is then prompted with this summary and the URLs as "observations," along with the original question, to write a final answer.
 
-The vector DB chaches any pages it visits throughout the session. This way, if you ask a follow upp question addressable by the previous search results, it will not need to initiate a new search. It can use the cached data.
+The vector DB retains any pages it visits throughout the session. This way, if you ask a follow up question addressable by the previous search results, it will not need to initiate a new search. It can use the cached data.
 
 You can also, if you like, readily then ask the AI for the links it consulted, and then have it open one or more in your default browser. E.g.
 
