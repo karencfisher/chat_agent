@@ -10,11 +10,11 @@ class BaseTool:
 
     @property 
     def get_name(self):
-        return self.tool_name
+        return self.__tool_name
     
     @property
     def get_object(self):
-        return self.tool_object
+        return self.__tool_object
 
     def __call__(self, input, tool_queue):
         result = self.run(input)

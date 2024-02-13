@@ -150,7 +150,25 @@ AI: I have opened the link to "Moab Weather Forecast and Reports (84532)" for yo
 
 ![Screenshot](Browser_screenshot.jpg)
 
-Or, if you prefer, you can make one prompt to chain the two tasks together, as in the example earlier above. Or, you may ask the agent to find and display documentation such as for a Python module such as Random. (There is no gurantee it will always get the 'official' docs. Sometimes it will prefer, for example, "geek for geeks.")
+Or, if you prefer, you can make one prompt to chain the two tasks together. For example, you may ask the agent to find and display documentation for Python random module. 
+
+```
+AI: Hello Karen! How can I assist you today?
+
+Human: Can you please find documentation on the Python random library, and display it on my screen?
+
+AI: Thought: I will need to search for the Python random library documentation and then display it on Karen's screen.
+
+AI: Working...
+
+AI: Working...
+
+AI: Thought: The official Python documentation would be the most reliable source for information about the Python random library. I will open this link on Karen's screen.
+
+AI: Thought: I have accomplished the task of finding the Python random library documentation and displaying it on Karen's screen.
+
+AI: I have opened the official Python documentation for the random library on your screen. You can read it to understand more about the library and its functions.
+```
 
 ![Screenshot](Documentation_screenshot.jpg)
 

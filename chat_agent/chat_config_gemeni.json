@@ -5,4 +5,4 @@
  "top_p": 1.0,
  "top_k": 40,
  "max_context": 32000,
- "max_tokens": 128}
+ "max_tokens": 1024}
