@@ -201,5 +201,5 @@ class ChatLogging:
         self.chat_path = os.path.join('chat_agent', 'chats', chat_file)
 
     def log_message(self, message):
-        with open(self.chat_path, 'a') as FILE:
+        with open(self.chat_path, 'a', encoding="utf-8") as FILE:
             FILE.write(f'{message}\n\n')        
