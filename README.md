@@ -46,7 +46,7 @@ This is a development project, so the best thing would do is to download or clon
 
 2) create a virtual environment, and activate it (Conda, venv, etc.)
 
-3) pip install -f requirements.txt
+3) pip install -r requirements.txt
 ```
 
 You will need to make a .env file to contain your API keys. Here is a template:
