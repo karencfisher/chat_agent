@@ -1,4 +1,4 @@
-import openai
+from openai import OpenAI
 try:
     from chat_agent.LLMs.chat_base import ChatBase
 except:
@@ -8,10 +8,10 @@ except:
 class ChatModel(ChatBase):
     def __init__(self, config):
         super(ChatModel, self).__init__(config)
-        openai.api_key = self.api_key
+        self.client =  OpenAI(api_key=self.api_key)
 
     def complete(self, prompt):
-        result = openai.ChatCompletion.create(
+        result = self.client.chat.completions.create(
             model=self.config['model'],
             messages = prompt,
             temperature=self.config.get('temperature', 0),

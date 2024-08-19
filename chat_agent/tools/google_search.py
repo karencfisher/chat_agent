@@ -6,9 +6,9 @@ import time
 from dotenv import load_dotenv
 from collections import defaultdict
 
-from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 
 try:
     from chat_agent.tools.async_web_scraper import AsyncWebScraper

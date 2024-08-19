@@ -85,9 +85,6 @@ class ChatAgent:
         self.logger.info(f'User\'s message: {text}')
         self.chat_logger.log_message(f'Human: {text}')
 
-        # setup queue to receive response from tool
-        tool_queue = Queue()
-
         # loop to perform actions scheduled by the LLM
         done = False
         while not done:
@@ -112,7 +109,9 @@ class ChatAgent:
                 metadata = None
                 continue
             if tool not in list(self.tools.keys()):
-                raise KeyError('Invalid tool name')
+                text = f'There is no tool called "{tool}". Try again using a tool listed \
+                         or give final answer.'
+                continue
             
             # if wait is 0, run directly and block for response. Otherwise, run
             # in new thread so we can track it's progress
@@ -140,7 +139,7 @@ class ChatAgent:
         tool_thread = Thread(target=self.tools[tool]['object'], 
                              args=(tool_input, tool_queue))
         tool_thread.start()
-        message_queue.put((False, "Working...", None))
+        message_queue.put((False, "Thinking...", None))
 
         iter = 1
         while not tool_done:
@@ -149,7 +148,7 @@ class ChatAgent:
             try:
                 response = tool_queue.get(block=True, timeout=self.tools[tool]['wait'])
             except Empty:
-                message_queue.put((False, "Working...", None))
+                message_queue.put((False, "Thinking...", None))
                 if iter == max_iter:
                     message_queue.put((False, "Tool timedout", None))
                     return None
@@ -170,15 +169,6 @@ class ChatAgent:
 
         # is final answer?
         if 'Final Answer:' in generated:
-            # filter for code examples (delimited by ```). If so, display code in pop-up
-            # window and replace it with "<displayed>" in user response
-            pattern = r"```(.*?)```"
-            match = re.search(pattern, generated, re.DOTALL)
-            if match is not None:
-                inner_text = match.group(0)  
-                display = CodeDisplay()
-                display(inner_text)
-                generated = generated.replace(inner_text, '<Displayed>').strip()
             return "Final Answer", generated.split('Final Answer:')[-1].strip(), thought_output
 
         # find action
